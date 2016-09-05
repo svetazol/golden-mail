@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load rest_framework %}
+{% block title %}Email service{% endblock %}
+{% block head %}Email service{% endblock %}
+{% block content %}
+    <form action="{% url 'email_service' %}" method="POST">
+        {% csrf_token %}
+        {% render_form serializer %}
+        <input type="submit" value="Save">
+    </form>
+
+{% endblock %}
