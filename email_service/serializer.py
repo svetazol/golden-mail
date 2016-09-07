@@ -5,4 +5,4 @@ from rest_framework import serializers
 class EmailServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailService
-        fields = '__all__'
+        fields = ('sending_dttm', 'email', 'message', 'owner')

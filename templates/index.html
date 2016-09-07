@@ -3,5 +3,6 @@
 {% block head %}Welcome to Email Service{% endblock %}
 {% block content %}
     <p>Welcome {{ user.username }} !!!</p>
+    <a href="{% url 'email_service_form' %}">Email Service</a>
     <a href="{% url 'accounts:logout' %}">Logout</a>
 {% endblock %}
