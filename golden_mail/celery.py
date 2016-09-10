@@ -16,8 +16,6 @@ app = Celery('golden_mail')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-print(app.conf.CELERY_TIMEZONE)
-
 
 @app.task(bind=True)
 def debug_task(self):

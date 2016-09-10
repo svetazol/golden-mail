@@ -1,9 +1,19 @@
-from time import sleep
 from django.core.mail import EmailMessage
+from email_service.models import EmailRequest
 from golden_mail.celery import app
 
 
 @app.task
-def send_email(message, addressee):
+def send_email(message, addressee, email_request_pk):
+    email_request = EmailRequest.objects.get(pk=email_request_pk)
     email = EmailMessage('Golden Mail', message, to=[addressee])
-    email.send()
+    try:
+        email.send()
+    except Exception as e:
+        print(e)
+        # fixme: is it ok to handle errors in such way?
+        email_request.status = 'внутрення_ошибка'
+    else:
+        email_request.status = 'отправлено'
+    finally:
+        email_request.save()

@@ -1,9 +1,8 @@
 {% extends "base.html" %}
-{% load rest_framework %}
 {% block title %}Email service{% endblock %}
 {% block head %}Email service{% endblock %}
 {% block content %}
-    <form action="{% url 'email_service' %}" method="POST">
+    <form action="{% url 'email_service:email_requests' %}" method="POST">
         {% csrf_token %}
         <div class="form-group ">
             <label>Sending dttm</label>

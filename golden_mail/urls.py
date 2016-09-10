@@ -17,16 +17,14 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-from accounts import views as accounts_views
-from email_service import views as email_service_views
 
 urlpatterns = [
+    url(r'^$', login_required(TemplateView.as_view(template_name='index.html'))),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
-    url(r'^email_service/$', email_service_views.EmailServiceDetail.as_view(), name='email_service'),
-    url(r'^email_service_form/', TemplateView.as_view(template_name="email_service/form.html"),
+    url(r'^email_service_form/', login_required(TemplateView.as_view(template_name="email_service/form.html")),
         name='email_service_form'),
-    url(r'^$', login_required(TemplateView.as_view(template_name='index.html'))),
     # fixme how to manage api/ ?
-    url(r'^api/users', accounts_views.UserList.as_view())
+    url(r'^api/', include('accounts.urls', namespace='accounts')),
+    url(r'^api/', include('email_service.urls', namespace='email_service')),
 ]
