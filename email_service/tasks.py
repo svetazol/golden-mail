@@ -10,9 +10,9 @@ def send_email(message, addressee, email_request_pk):
     try:
         email.send()
     except Exception as e:
-        print(e)
         # fixme: is it ok to handle errors in such way?
         email_request.status = 'внутрення_ошибка'
+        raise e
     else:
         email_request.status = 'отправлено'
     finally:

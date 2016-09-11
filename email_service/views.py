@@ -1,4 +1,6 @@
 from django.http import Http404
+from rest_framework import permissions
+
 from email_service.models import EmailRequest
 from email_service.serializer import EmailRequestSerializer, MessageSerializer
 from email_service.tasks import send_email
@@ -21,16 +23,20 @@ class EmailRequestDetail(APIView):
 
 
 class EmailRequestList(APIView):
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
     def get(self, request):
         email_requests = EmailRequest.objects.all()
         serializer = EmailRequestSerializer(email_requests, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = EmailRequestSerializer(data=request.data)
+        data = request.data.copy()
+        data['owner'] = request.user.id
+        serializer = EmailRequestSerializer(data=data)
         if serializer.is_valid():
             email_request_obj = serializer.save(status='ожидает')
-            send_email.apply_async((email_request_obj.message, email_request_obj.email,email_request_obj.pk),
+            send_email.apply_async((email_request_obj.message, email_request_obj.email, email_request_obj.pk),
                                    eta=email_request_obj.sending_dttm)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
@@ -40,5 +46,8 @@ class EmailRequestList(APIView):
 class MessageList(APIView):
     def get(self, request):
         email_requests = EmailRequest.objects.all()
+        status = self.request.query_params.get('status', None)
+        if status is not None:
+            email_requests = email_requests.filter(status=status)
         serializer = MessageSerializer(email_requests, many=True)
         return Response(serializer.data)
