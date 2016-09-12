@@ -1,7 +1,10 @@
+from time import sleep
+
 from django.http import Http404
 from rest_framework import permissions
-
+from rest_framework_extensions.cache.decorators import cache_response
 from email_service.models import EmailRequest
+from email_service.permissions import IsOwnerOrReadOnly
 from email_service.serializer import EmailRequestSerializer, MessageSerializer
 from email_service.tasks import send_email
 from rest_framework import status
@@ -23,10 +26,13 @@ class EmailRequestDetail(APIView):
 
 
 class EmailRequestList(APIView):
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    # fixme: IsOwnerOrReadOnly, check_object_permissions is not called for APIView (but for GenericAPIView), add filter by user to get method?
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrReadOnly,)
 
+    @cache_response(cache_errors=False, timeout=15 * 60)
     def get(self, request):
         email_requests = EmailRequest.objects.all()
+        sleep(20)
         serializer = EmailRequestSerializer(email_requests, many=True)
         return Response(serializer.data)
 
@@ -44,6 +50,9 @@ class EmailRequestList(APIView):
 
 
 class MessageList(APIView):
+    # fixme: IsOwnerOrReadOnly, check_object_permissions is not called for APIView (but for GenericAPIView), add filter by user to get method?
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrReadOnly,)
+
     def get(self, request):
         email_requests = EmailRequest.objects.all()
         status = self.request.query_params.get('status', None)

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Email Service{% endblock %}
+{% block head %}Email request created{% endblock %}
+{% block content %}
+    <a href="{% url 'email_service_form' %}">Email Service</a>
+    <a href="{% url 'index' %}">Home</a>
+    <a href="{% url 'accounts:logout' %}">Logout</a>
+{% endblock %}

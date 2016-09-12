@@ -2,9 +2,9 @@
 {% block title %}Email service{% endblock %}
 {% block head %}Email service{% endblock %}
 {% block content %}
-    <form id="emailServiceForm" method="POST" action="{% url 'email_service:email_requests' %}">
+    <form id="emailServiceForm" >
         {% csrf_token %}
-        <div class="form-group ">
+        <div class="form-group">
             <label>Sending dttm</label>
             <input name="sending_dttm" class="form-control" type="datetime-local">
         </div>
@@ -16,30 +16,29 @@
             <textarea name="message" class="form-control"></textarea>
         </div>
 
-        <input type="submit" value="Save">
+        <input id ="emailServiceSave" type="button" value="Save">
 
     </form>
-{#    {% load static %}#}
-{#    <script type="text/javascript" src="{% static "jquery-3.1.0.min.js" %}"></script>#}
-{#    <script>#}
-{##}
-{#        $('#emailServiceForm').submit(function () {#}
-{#            $.ajax({#}
-{#                type: "POST",#}
-{#                url: "{% url 'email_service:email_requests' %}",#}
-{#                data: $(this).serialize(),#}
-{#                dataType: "json",#}
-{#                success: function (result) {#}
-{#                    window.location.replace("{% url 'email_service_success_form' %}");#}
-{#                },#}
-{#                error: function (xhr, statusText, err) {#}
-{#                    alert("Error:" + xhr);#}
-{#                    window.location.replace("{% url 'email_service_success_form' %}");#}
-{#                }#}
-{#            });#}
-{##}
-{#        });#}
-{#    </script>#}
+    {% load static %}
+    <script type="text/javascript" src="{% static "jquery-3.1.0.min.js" %}"></script>
+    <script>
+
+        $('#emailServiceSave').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'email_service:email_requests' %}",
+                data: $('#emailServiceForm').serialize(),
+                dataType: "json",
+                success: function (result) {
+                    window.location.replace("{% url 'email_service_success_form' %}");
+                },
+                error: function (xhr, statusText, err) {
+                    alert("Error:" + xhr.status + ": " + xhr.responseText);
+                }
+            });
+
+        });
+    </script>
 
 
 {% endblock %}
